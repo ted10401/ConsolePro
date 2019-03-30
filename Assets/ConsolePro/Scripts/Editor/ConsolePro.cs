@@ -60,7 +60,7 @@ public class ConsolePro : EditorWindow
     {
         if (log != null)
         {
-            if(m_consoleProTitlePanel != null && m_consoleProTitlePanel.toggleFocusOnBottom)
+            if(m_consoleProTitlePanel != null && m_consoleProTitlePanel.toggleLockOnBottom)
             {
                 m_consoleProUpperPanel.SetScrollPosition(new Vector2(0, m_logMessageReceiver.filterLogs.Count * 32));
             }

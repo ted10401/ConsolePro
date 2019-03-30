@@ -10,7 +10,7 @@ public class ConsoleProTitlePanel : BaseConsoleProPanel
 
     public bool toggleClearOnPlay = true;
     public bool toggleErrorPause;
-    public bool toggleFocusOnBottom = true;
+    public bool toggleLockOnBottom = true;
 
     private bool m_toggleCollapse;
     private string m_searchFilter;
@@ -43,9 +43,9 @@ public class ConsoleProTitlePanel : BaseConsoleProPanel
         GUILayout.Space(5);
 
         m_toggleCollapse = GUILayout.Toggle(m_toggleCollapse, new GUIContent("Collapse"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-        toggleClearOnPlay = GUILayout.Toggle(toggleClearOnPlay, new GUIContent("Clear On Play"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+        toggleClearOnPlay = GUILayout.Toggle(toggleClearOnPlay, new GUIContent("Clear on Play"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
         toggleErrorPause = GUILayout.Toggle(toggleErrorPause, new GUIContent("Error Pause"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-        toggleFocusOnBottom = GUILayout.Toggle(toggleFocusOnBottom, new GUIContent("Focus On Bottom"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+        toggleLockOnBottom = GUILayout.Toggle(toggleLockOnBottom, new GUIContent("Lock on Bottom"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
 
         GUILayout.Space(1);
 
