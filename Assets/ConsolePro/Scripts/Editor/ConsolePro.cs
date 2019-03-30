@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
 
 public class ConsolePro : EditorWindow
 {
@@ -47,19 +46,7 @@ public class ConsolePro : EditorWindow
     private Texture2D m_boxBgEven;
     private Texture2D m_boxBgSelected;
 
-    private List<Log> m_allLogs = new List<Log>();
-    private int m_allLogCount;
-    private int m_allWarningCount;
-    private int m_allErrorCount;
-
-    private List<Log> m_collapseLogs = new List<Log>();
-    private int m_collapseLogCount;
-    private int m_collapseWarningCount;
-    private int m_collapseErrorCount;
-
-    private List<Log> m_toggleLogs = new List<Log>();
-    private List<Log> m_filterLogs = new List<Log>();
-    private Log m_selectedLog;
+    private LogMessegeReceiver m_logMessageReceiver;
 
     [MenuItem("Window/Console Pro")]
     private static void OpenWindow()
@@ -96,45 +83,78 @@ public class ConsolePro : EditorWindow
         m_textAreaStyle.normal.textColor = Color.black;
         m_textAreaStyle.normal.background = EditorGUIUtility.Load("builtin skins/lightskin/images/projectbrowsericonareabg.png") as Texture2D;
 
-        ClearLogs();
-
-        Application.logMessageReceived += LogMessageReceived;
+        m_logMessageReceiver = new LogMessegeReceiver(OnLogMessageReceived);
         EditorApplication.playModeStateChanged += EditorApplication_PlayModeStateChanged;
-    }
-
-    void EditorApplication_PlayModeStateChanged(PlayModeStateChange obj)
-    {
-        if(obj == PlayModeStateChange.EnteredPlayMode)
-        {
-            if(m_toggleClearOnPlay)
-            {
-                ClearLogs();
-            }
-        }
     }
 
     private void OnDisable()
     {
-        Application.logMessageReceived -= LogMessageReceived;
+        if (m_logMessageReceiver != null)
+        {
+            m_logMessageReceiver.Destroy();
+        }
+
         EditorApplication.playModeStateChanged -= EditorApplication_PlayModeStateChanged;
     }
 
     private void OnDestroy()
     {
-        Application.logMessageReceived -= LogMessageReceived;
+        if(m_logMessageReceiver != null)
+        {
+            m_logMessageReceiver.Destroy();
+        }
+
         EditorApplication.playModeStateChanged -= EditorApplication_PlayModeStateChanged;
+    }
+
+    private void OnLogMessageReceived(Log log = null)
+    {
+        if (log != null)
+        {
+            if (m_toggleFocusOnBottom)
+            {
+                m_upperPanelScroll = new Vector2(0, m_logMessageReceiver.m_filterLogs.Count * 32);
+            }
+
+            switch (log.type)
+            {
+                case LogType.Error:
+                case LogType.Exception:
+                case LogType.Assert:
+                    if (m_toggleErrorPause)
+                    {
+                        EditorApplication.isPaused = true;
+                    }
+                    break;
+            }
+        }
+
+        Repaint();
+    }
+
+    private void EditorApplication_PlayModeStateChanged(PlayModeStateChange obj)
+    {
+        if (obj == PlayModeStateChange.EnteredPlayMode)
+        {
+            if (m_toggleClearOnPlay)
+            {
+                m_logMessageReceiver.Clear();
+            }
+        }
     }
 
     private void OnGUI()
     {
         OnDrawTitle();
         OnDrawUpperPanel();
-        OnDrawLowerPanel();
         OnDrawResizer();
+        OnProcessEvents(Event.current);
+        OnDrawLowerPanel();
 
-        ProcessEvents(Event.current);
-
-        if (GUI.changed) Repaint();
+        if (GUI.changed)
+        {
+            Repaint();
+        }
     }
 
     private void OnDrawTitle()
@@ -147,7 +167,7 @@ public class ConsolePro : EditorWindow
 
         if(GUILayout.Button(new GUIContent("Clear"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true)))
         {
-            ClearLogs();
+            m_logMessageReceiver.Clear();
         }
 
         GUILayout.Space(5);
@@ -174,20 +194,24 @@ public class ConsolePro : EditorWindow
 
         if(m_toggleCollapse)
         {
-            m_toggleLog = GUILayout.Toggle(m_toggleLog, new GUIContent(m_collapseLogCount.ToString(), m_infoIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-            m_toggleWarning = GUILayout.Toggle(m_toggleWarning, new GUIContent(m_collapseWarningCount.ToString(), m_warningIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-            m_toggleError = GUILayout.Toggle(m_toggleError, new GUIContent(m_collapseErrorCount.ToString(), m_errorIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+            m_toggleLog = GUILayout.Toggle(m_toggleLog, new GUIContent(m_logMessageReceiver.m_collapseLogCount.ToString(), m_infoIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+            m_toggleWarning = GUILayout.Toggle(m_toggleWarning, new GUIContent(m_logMessageReceiver.m_collapseWarningCount.ToString(), m_warningIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+            m_toggleError = GUILayout.Toggle(m_toggleError, new GUIContent(m_logMessageReceiver.m_collapseErrorCount.ToString(), m_errorIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
         }
         else
         {
-            m_toggleLog = GUILayout.Toggle(m_toggleLog, new GUIContent(m_allLogCount.ToString(), m_infoIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-            m_toggleWarning = GUILayout.Toggle(m_toggleWarning, new GUIContent(m_allWarningCount.ToString(), m_warningIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-            m_toggleError = GUILayout.Toggle(m_toggleError, new GUIContent(m_allErrorCount.ToString(), m_errorIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+            m_toggleLog = GUILayout.Toggle(m_toggleLog, new GUIContent(m_logMessageReceiver.m_allLogCount.ToString(), m_infoIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+            m_toggleWarning = GUILayout.Toggle(m_toggleWarning, new GUIContent(m_logMessageReceiver.m_allWarningCount.ToString(), m_warningIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+            m_toggleError = GUILayout.Toggle(m_toggleError, new GUIContent(m_logMessageReceiver.m_allErrorCount.ToString(), m_errorIconSmall), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
         }
 
         if(EditorGUI.EndChangeCheck())
         {
-            UpdateLogs(null);
+            m_logMessageReceiver.SetToggleCollapse(m_toggleCollapse);
+            m_logMessageReceiver.SetSearchFilter(m_searchFilter);
+            m_logMessageReceiver.SetToggleLog(m_toggleLog);
+            m_logMessageReceiver.SetToggleWarning(m_toggleWarning);
+            m_logMessageReceiver.SetToggleError(m_toggleError);
         }
 
         GUILayout.EndHorizontal();
@@ -204,12 +228,12 @@ public class ConsolePro : EditorWindow
         {
             m_upperPanelScroll = scrollScope.scrollPosition;
 
-            if (m_filterLogs != null && m_filterLogs.Count > 0)
+            if (m_logMessageReceiver.m_filterLogs != null && m_logMessageReceiver.m_filterLogs.Count > 0)
             {
                 int count = -1;
-                for (int i = 0; i < m_filterLogs.Count; i++)
+                for (int i = 0; i < m_logMessageReceiver.m_filterLogs.Count; i++)
                 {
-                    switch (m_filterLogs[i].type)
+                    switch (m_logMessageReceiver.m_filterLogs[i].type)
                     {
                         case LogType.Log:
                             if (!m_toggleLog)
@@ -235,15 +259,15 @@ public class ConsolePro : EditorWindow
 
                     count++;
 
-                    if (OnDrawLog(m_filterLogs[i], count % 2 == 0))
+                    if (OnDrawLog(m_logMessageReceiver.m_filterLogs[i], count % 2 == 0))
                     {
-                        if (m_selectedLog != null)
+                        if (m_logMessageReceiver.m_selectedLog != null)
                         {
-                            m_selectedLog.isSelected = false;
+                            m_logMessageReceiver.m_selectedLog.isSelected = false;
                         }
 
-                        m_filterLogs[i].isSelected = true;
-                        m_selectedLog = m_filterLogs[i];
+                        m_logMessageReceiver.m_filterLogs[i].isSelected = true;
+                        m_logMessageReceiver.m_selectedLog = m_logMessageReceiver.m_filterLogs[i];
                         GUI.changed = true;
                     }
                 }
@@ -317,23 +341,7 @@ public class ConsolePro : EditorWindow
         EditorGUIUtility.AddCursorRect(m_resizer, MouseCursor.ResizeVertical);
     }
 
-    private void OnDrawLowerPanel()
-    {
-        m_lowerPanel = new Rect(0, (position.height * m_sizeRatio) + RESIZER_HEIGHT / 2, position.width, (position.height * (1 - m_sizeRatio)) - RESIZER_HEIGHT / 2);
-
-        GUILayout.BeginArea(m_lowerPanel);
-        m_lowerPanelScroll = GUILayout.BeginScrollView(m_lowerPanelScroll);
-
-        if (m_selectedLog != null)
-        {
-            GUILayout.TextArea(m_selectedLog.lowerText, m_textAreaStyle);
-        }
-
-        GUILayout.EndScrollView();
-        GUILayout.EndArea();
-    }
-
-    private void ProcessEvents(Event e)
+    private void OnProcessEvents(Event e)
     {
         switch (e.type)
         {
@@ -343,7 +351,7 @@ public class ConsolePro : EditorWindow
                 {
                     m_isResizing = true;
                 }
-                else if(!m_upperPanel.Contains(e.mousePosition) &&
+                else if (!m_upperPanel.Contains(e.mousePosition) &&
                         !m_lowerPanel.Contains(e.mousePosition) &&
                         !m_resizer.Contains(e.mousePosition))
                 {
@@ -357,18 +365,13 @@ public class ConsolePro : EditorWindow
                 break;
         }
 
-        Resize(e);
-    }
-
-    private void Resize(Event e)
-    {
         if (m_isResizing)
         {
-            if(e.mousePosition.y < 50)
+            if (e.mousePosition.y < 50)
             {
                 m_sizeRatio = 50 / position.height;
             }
-            else if(position.height - e.mousePosition.y < 30)
+            else if (position.height - e.mousePosition.y < 30)
             {
                 m_sizeRatio = (position.height - 30) / position.height;
             }
@@ -381,207 +384,19 @@ public class ConsolePro : EditorWindow
         }
     }
 
-    private void LogMessageReceived(string condition, string stackTrace, LogType type)
+    private void OnDrawLowerPanel()
     {
-        Log log = new Log(condition, stackTrace, type);
+        m_lowerPanel = new Rect(0, (position.height * m_sizeRatio) + RESIZER_HEIGHT / 2, position.width, (position.height * (1 - m_sizeRatio)) - RESIZER_HEIGHT / 2);
 
-        UpdateLogs(log);
-    }
+        GUILayout.BeginArea(m_lowerPanel);
+        m_lowerPanelScroll = GUILayout.BeginScrollView(m_lowerPanelScroll);
 
-    private void ClearLogs()
-    {
-        m_allLogs.Clear();
-        m_allLogCount = 0;
-        m_allWarningCount = 0;
-        m_allErrorCount = 0;
-
-        m_collapseLogs.Clear();
-        m_collapseLogCount = 0;
-        m_collapseWarningCount = 0;
-        m_collapseErrorCount = 0;
-
-        m_toggleLogs.Clear();
-        m_filterLogs.Clear();
-
-        m_selectedLog = null;
-
-        UpdateLogs(null);
-    }
-
-    private void UpdateLogs(Log log = null)
-    {
-        UpdateAllLogs(log);
-        UpdateCollapseLogs(log);
-        UpdateToggleLogs();
-        UpdateFilterLogs();
-
-        if(log != null)
+        if (m_logMessageReceiver.m_selectedLog != null)
         {
-            if(m_toggleFocusOnBottom)
-            {
-                m_upperPanelScroll = new Vector2(0, m_filterLogs.Count * 32);
-            }
-
-            switch(log.type)
-            {
-                case LogType.Error:
-                case LogType.Exception:
-                case LogType.Assert:
-                    if (m_toggleErrorPause)
-                    {
-                        EditorApplication.isPaused = true;
-                    }
-                    break;
-            }
+            GUILayout.TextArea(m_logMessageReceiver.m_selectedLog.lowerText, m_textAreaStyle);
         }
 
-        Repaint();
-    }
-
-    private void UpdateAllLogs(Log log)
-    {
-        if(log == null)
-        {
-            return;
-        }
-
-        m_allLogs.Add(log);
-
-        switch (log.type)
-        {
-            case LogType.Log:
-                m_allLogCount++;
-                break;
-            case LogType.Warning:
-                m_allWarningCount++;
-                break;
-            case LogType.Error:
-            case LogType.Exception:
-            case LogType.Assert:
-                m_allErrorCount++;
-                break;
-        }
-    }
-
-    private void UpdateCollapseLogs(Log log)
-    {
-        if(log == null)
-        {
-            return;
-        }
-
-        Log cacheLog = m_collapseLogs.Find((Log obj) => obj.condition == log.condition && obj.stackTrace == log.stackTrace && obj.type == log.type);
-        if (cacheLog != null)
-        {
-            cacheLog.collapseCount++;
-        }
-        else
-        {
-            log.collapseCount = 1;
-            m_collapseLogs.Add(log);
-
-            switch (log.type)
-            {
-                case LogType.Log:
-                    m_collapseLogCount++;
-                    break;
-                case LogType.Warning:
-                    m_collapseWarningCount++;
-                    break;
-                case LogType.Error:
-                case LogType.Exception:
-                case LogType.Assert:
-                    m_collapseErrorCount++;
-                    break;
-            }
-        }
-    }
-
-    private void UpdateToggleLogs()
-    {
-        List<Log> logs = new List<Log>();
-        if (m_toggleCollapse)
-        {
-            logs.AddRange(m_collapseLogs);
-        }
-        else
-        {
-            logs.AddRange(m_allLogs);
-        }
-
-        m_toggleLogs.Clear();
-
-        Log cacheLog = null;
-        for (int i = 0; i < logs.Count; i++)
-        {
-            cacheLog = logs[i];
-            switch (cacheLog.type)
-            {
-                case LogType.Log:
-                    if (m_toggleLog)
-                    {
-                        m_toggleLogs.Add(cacheLog);
-                    }
-                    break;
-                case LogType.Warning:
-                    if (m_toggleWarning)
-                    {
-                        m_toggleLogs.Add(cacheLog);
-                    }
-                    break;
-                case LogType.Error:
-                case LogType.Exception:
-                case LogType.Assert:
-                    if (m_toggleError)
-                    {
-                        m_toggleLogs.Add(cacheLog);
-                    }
-                    break;
-            }
-        }
-    }
-
-    private void UpdateFilterLogs()
-    {
-        m_filterLogs.Clear();
-
-        if (string.IsNullOrEmpty(m_searchFilter))
-        {
-            m_filterLogs.AddRange(m_toggleLogs);
-        }
-        else
-        {
-            m_filterLogs = m_toggleLogs.FindAll(templateLog => templateLog.condition.Contains(m_searchFilter));
-        }
-    }
-}
-
-public class Log
-{
-    private const string TIME_FORMAT = "[{0}] ";
-
-    public string condition;
-    public string stackTrace;
-    public LogType type;
-    public string upperText;
-    public string lowerText;
-    public bool isSelected;
-    public int collapseCount;
-
-    public Log(string condition, string stackTrace, LogType type)
-    {
-        this.condition = condition;
-        this.stackTrace = stackTrace;
-        this.type = type;
-
-        upperText = GetTime() + condition + "\n" + stackTrace.Split(new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries)[0];
-        lowerText = condition + "\n" + stackTrace;
-        isSelected = false;
-        collapseCount = 0;
-    }
-
-    private string GetTime()
-    {
-        return string.Format(TIME_FORMAT, System.DateTime.Now.ToString("HH:mm:ss"));
+        GUILayout.EndScrollView();
+        GUILayout.EndArea();
     }
 }
