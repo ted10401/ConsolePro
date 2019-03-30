@@ -13,17 +13,17 @@ The whole window includes four parts, title panel, upper panel, resize panel, an
 <img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-title.png">
 The title panel contains several buttons, Clear, Collapse, Clear on Play, Error Pause, Lock on Bottom, Search Filter, Show Logs,  Show Warnings, and Show Errors.
 
-| Feature        | Description                                                                                                        |
-|----------------|--------------------------------------------------------------------------------------------------------------------|
-| Clear          | The button to clear logs.                                                                                          |
-| Collapse       | The toggle to collapse logs. The collapse value would show on the right side of the single log information.        |
-| Clear on Play  | The toggle to clear the logs after the application plays. (Knowing Issue, the logs would be cleared all the time.) |
-| Error Pause    | The toggle to pause the application if the error log show up.                                                      |
-| Lock on Bottom | The toggle to lock the scroll view on the bottom to focus on the latest logs.                                      |
-| Search Filter  | The text filed to filter the logs.                                                                                 |
-| Show Logs      | The toggle to show logs or not.                                                                                    |
-| Show Warnings  | The toggle to show warnings or not.                                                                                |
-| Show Errors    | The toggle to show errors or not.                                                                                  |
+|Feature|Description|
+|-------|-----------|
+|Clear|The button to clear logs.|
+|Collapse|The toggle to collapse logs.<br/>The collapse value would show on the right side of the single log information.|
+|Clear on Play|The toggle to clear the logs after the application plays.<br/>(Knowing Issue, the logs would be cleared all the time.)|
+|Error Pause|The toggle to pause the application if the error log show up.|
+|Lock on Bottom|The toggle to lock the scroll view on the bottom to focus on the latest logs.|
+|Search Filter|The text filed to filter the logs.|
+|Show Logs| The toggle to show logs or not.|
+|Show Warnings| The toggle to show warnings or not.|
+|Show Errors| The toggle to show errors or not.|
 
 
 ### Upper Panel
