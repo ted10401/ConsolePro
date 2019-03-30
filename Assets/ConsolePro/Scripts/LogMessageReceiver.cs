@@ -5,19 +5,84 @@ using System.Threading;
 
 public class LogMessageReceiver
 {
-    public bool toggleCollapse { get { return m_toggleCollapse; } set { m_toggleCollapse = value; UpdateLogs(); } }
+    public bool toggleCollapse
+    {
+        get { return m_toggleCollapse; }
+        set
+        {
+            if(m_toggleCollapse == value)
+            {
+                return;
+            }
+
+            m_toggleCollapse = value;
+            UpdateLogs();
+        }
+    }
     private bool m_toggleCollapse;
 
-    public bool toggleLog { get { return m_toggleLog; } set { m_toggleLog = value; UpdateLogs(); } }
+    public bool toggleLog
+    {
+        get { return m_toggleLog; }
+        set
+        {
+            if (m_toggleLog == value)
+            {
+                return;
+            }
+
+            m_toggleLog = value;
+            UpdateLogs();
+        }
+    }
     private bool m_toggleLog;
 
-    public bool toggleWarning { get { return m_toggleWarning; } set { m_toggleWarning = value; UpdateLogs(); } }
+    public bool toggleWarning
+    {
+        get { return m_toggleWarning; }
+        set
+        {
+            if (m_toggleWarning == value)
+            {
+                return;
+            }
+
+            m_toggleWarning = value;
+            UpdateLogs();
+        }
+    }
     private bool m_toggleWarning;
 
-    public bool toggleError { get { return m_toggleError; } set { m_toggleError = value; UpdateLogs(); } }
+    public bool toggleError
+    {
+        get { return m_toggleError; }
+        set
+        {
+            if (m_toggleError == value)
+            {
+                return;
+            }
+
+            m_toggleError = value;
+            UpdateLogs();
+        }
+    }
     private bool m_toggleError;
 
-    public string searchFilter { get { return m_searchFilter; } set { m_searchFilter = value; UpdateLogs(); } }
+    public string searchFilter
+    {
+        get { return m_searchFilter; }
+        set
+        {
+            if (m_searchFilter == value)
+            {
+                return;
+            }
+
+            m_searchFilter = value;
+            UpdateLogs();
+        }
+    }
     private string m_searchFilter;
 
     public int logCount;
