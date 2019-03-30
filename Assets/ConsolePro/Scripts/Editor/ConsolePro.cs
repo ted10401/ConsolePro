@@ -3,51 +3,6 @@ using UnityEditor;
 
 public class ConsolePro : EditorWindow
 {
-    private const float RESIZER_HEIGHT = 1f;
-    private float m_menuBarHeight = 20f;
-    private const float TEXT_FIELD_SEARCH_FILTER_WIDTH = 100f;
-
-    private Rect m_upperPanel;
-    private Rect m_lowerPanel;
-    private Rect m_resizer;
-    private Rect m_menuBar;
-
-    private float m_sizeRatio = 0.5f;
-    private bool m_isResizing;
-
-    private bool m_toggleCollapse;
-    private bool m_toggleClearOnPlay = true;
-    private bool m_toggleErrorPause;
-    private bool m_toggleFocusOnBottom;
-    private string m_searchFilter;
-
-    private bool m_toggleLog = true;
-    private bool m_toggleWarning = true;
-    private bool m_toggleError = true;
-
-    private Vector2 m_upperPanelScroll;
-    private Vector2 m_lowerPanelScroll;
-
-    private GUIStyle m_toolbarSearchTextField;
-    private GUIStyle m_resizerStyle;
-    private GUIStyle m_boxStyle;
-    private GUIStyle m_collapseStyle;
-    private GUIStyle m_textAreaStyle;
-
-    private Texture2D m_icon;
-    private Texture2D m_errorIcon;
-    private Texture2D m_errorIconSmall;
-    private Texture2D m_warningIcon;
-    private Texture2D m_warningIconSmall;
-    private Texture2D m_infoIcon;
-    private Texture2D m_infoIconSmall;
-
-    private Texture2D m_boxBgOdd;
-    private Texture2D m_boxBgEven;
-    private Texture2D m_boxBgSelected;
-
-    private LogMessegeReceiver m_logMessageReceiver;
-
     [MenuItem("Window/Console Pro")]
     private static void OpenWindow()
     {
@@ -55,18 +10,42 @@ public class ConsolePro : EditorWindow
         window.titleContent = new GUIContent("Console Pro", EditorGUIUtility.Load("icons/d_UnityEditor.ConsoleWindow.png") as Texture2D);
     }
 
+    private LogMessegeReceiver m_logMessageReceiver;
+
     private void OnEnable()
     {
-        m_errorIcon = EditorGUIUtility.Load("icons/console.erroricon.png") as Texture2D;
-        m_warningIcon = EditorGUIUtility.Load("icons/console.warnicon.png") as Texture2D;
-        m_infoIcon = EditorGUIUtility.Load("icons/console.infoicon.png") as Texture2D;
+        OnTitleCached();
+        OnUpperPanelCached();
+        OnResizerCached();
+        OnLowerPanelCached();
 
-        m_errorIconSmall = EditorGUIUtility.Load("icons/console.erroricon.sml.png") as Texture2D;
-        m_warningIconSmall = EditorGUIUtility.Load("icons/console.warnicon.sml.png") as Texture2D;
+        m_logMessageReceiver = new LogMessegeReceiver(OnLogMessageReceived);
+        EditorApplication.playModeStateChanged += EditorApplication_PlayModeStateChanged;
+    }
+
+    private Texture2D m_infoIconSmall;
+    private Texture2D m_warningIconSmall;
+    private Texture2D m_errorIconSmall;
+    private void OnTitleCached()
+    {
         m_infoIconSmall = EditorGUIUtility.Load("icons/console.infoicon.sml.png") as Texture2D;
+        m_warningIconSmall = EditorGUIUtility.Load("icons/console.warnicon.sml.png") as Texture2D;
+        m_errorIconSmall = EditorGUIUtility.Load("icons/console.erroricon.sml.png") as Texture2D;
+    }
 
-        m_resizerStyle = new GUIStyle();
-        m_resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
+    private Texture2D m_errorIcon;
+    private Texture2D m_warningIcon;
+    private Texture2D m_infoIcon;
+    private GUIStyle m_boxStyle;
+    private GUIStyle m_collapseStyle;
+    private Texture2D m_boxBgOdd;
+    private Texture2D m_boxBgEven;
+    private Texture2D m_boxBgSelected;
+    private void OnUpperPanelCached()
+    {
+        m_infoIcon = EditorGUIUtility.Load("icons/console.infoicon.png") as Texture2D;
+        m_warningIcon = EditorGUIUtility.Load("icons/console.warnicon.png") as Texture2D;
+        m_errorIcon = EditorGUIUtility.Load("icons/console.erroricon.png") as Texture2D;
 
         m_boxStyle = new GUIStyle();
         m_boxStyle.normal.textColor = Color.black;
@@ -78,13 +57,21 @@ public class ConsolePro : EditorWindow
         m_boxBgOdd = EditorGUIUtility.Load("builtin skins/lightskin/images/cn entrybackodd.png") as Texture2D;
         m_boxBgEven = EditorGUIUtility.Load("builtin skins/lightskin/images/cnentrybackeven.png") as Texture2D;
         m_boxBgSelected = EditorGUIUtility.Load("builtin skins/lightskin/images/menuitemhover.png") as Texture2D;
+    }
 
+    private GUIStyle m_resizerStyle;
+    private void OnResizerCached()
+    {
+        m_resizerStyle = new GUIStyle();
+        m_resizerStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;
+    }
+
+    private GUIStyle m_textAreaStyle;
+    private void OnLowerPanelCached()
+    {
         m_textAreaStyle = new GUIStyle();
         m_textAreaStyle.normal.textColor = Color.black;
         m_textAreaStyle.normal.background = EditorGUIUtility.Load("builtin skins/lightskin/images/projectbrowsericonareabg.png") as Texture2D;
-
-        m_logMessageReceiver = new LogMessegeReceiver(OnLogMessageReceived);
-        EditorApplication.playModeStateChanged += EditorApplication_PlayModeStateChanged;
     }
 
     private void OnDisable()
@@ -113,7 +100,7 @@ public class ConsolePro : EditorWindow
         {
             if (m_toggleFocusOnBottom)
             {
-                m_upperPanelScroll = new Vector2(0, m_logMessageReceiver.m_filterLogs.Count * 32);
+                m_upperPanelScrollPosition = new Vector2(0, m_logMessageReceiver.m_filterLogs.Count * 32);
             }
 
             switch (log.type)
@@ -157,11 +144,22 @@ public class ConsolePro : EditorWindow
         }
     }
 
+    private const float TITLE_HEIGHT = 20f;
+    private const float TEXT_FIELD_SEARCH_FILTER_WIDTH = 100f;
+    private Rect m_titleRect;
+    private bool m_toggleCollapse;
+    private bool m_toggleClearOnPlay = true;
+    private bool m_toggleErrorPause;
+    private bool m_toggleFocusOnBottom;
+    private string m_searchFilter;
+    private bool m_toggleLog = true;
+    private bool m_toggleWarning = true;
+    private bool m_toggleError = true;
     private void OnDrawTitle()
     {
-        m_menuBar = new Rect(0, 0, position.width, m_menuBarHeight);
+        m_titleRect = new Rect(0, 0, position.width, TITLE_HEIGHT);
 
-        GUILayout.BeginArea(m_menuBar, EditorStyles.toolbar);
+        GUILayout.BeginArea(m_titleRect, EditorStyles.toolbar);
 
         GUILayout.BeginHorizontal();
 
@@ -218,15 +216,16 @@ public class ConsolePro : EditorWindow
         GUILayout.EndArea();
     }
 
+    private Rect m_upperPanelRect;
+    private Vector2 m_upperPanelScrollPosition;
     private void OnDrawUpperPanel()
     {
-        m_upperPanel = new Rect(0, m_menuBarHeight - 1.5f, position.width, position.height * m_sizeRatio - m_menuBarHeight - RESIZER_HEIGHT / 2);
+        m_upperPanelRect = new Rect(0, TITLE_HEIGHT - 1.5f, position.width, position.height * m_sizeRatio - TITLE_HEIGHT - RESIZER_HEIGHT / 2);
 
-        GUILayout.BeginArea(m_upperPanel);
-
-        using(GUILayout.ScrollViewScope scrollScope = new GUILayout.ScrollViewScope(m_upperPanelScroll))
+        GUILayout.BeginArea(m_upperPanelRect);
+        using(GUILayout.ScrollViewScope scrollViewScope = new GUILayout.ScrollViewScope(m_upperPanelScrollPosition))
         {
-            m_upperPanelScroll = scrollScope.scrollPosition;
+            m_upperPanelScrollPosition = scrollViewScope.scrollPosition;
 
             if (m_logMessageReceiver.m_filterLogs != null && m_logMessageReceiver.m_filterLogs.Count > 0)
             {
@@ -276,6 +275,7 @@ public class ConsolePro : EditorWindow
         GUILayout.EndArea();
     }
 
+    private Texture2D m_cacheIcon;
     private bool OnDrawLog(Log log, bool isOdd)
     {
         if (log.isSelected)
@@ -300,15 +300,15 @@ public class ConsolePro : EditorWindow
         switch (log.type)
         {
             case LogType.Log:
-                m_icon = m_infoIcon;
+                m_cacheIcon = m_infoIcon;
                 break;
             case LogType.Warning:
-                m_icon = m_warningIcon;
+                m_cacheIcon = m_warningIcon;
                 break;
             case LogType.Error:
             case LogType.Exception:
             case LogType.Assert:
-                m_icon = m_errorIcon;
+                m_cacheIcon = m_errorIcon;
                 break;
         }
 
@@ -318,12 +318,12 @@ public class ConsolePro : EditorWindow
 
         if(m_toggleCollapse)
         {
-            selected = GUILayout.Button(new GUIContent(log.upperText, m_icon), m_boxStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
+            selected = GUILayout.Button(new GUIContent(log.upperText, m_cacheIcon), m_boxStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
             GUILayout.Label(new GUIContent(log.collapseCount.ToString() + "  "), m_collapseStyle, GUILayout.Width(32), GUILayout.Height(32));
         }
         else
         {
-            selected = GUILayout.Button(new GUIContent(log.upperText, m_icon), m_boxStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
+            selected = GUILayout.Button(new GUIContent(log.upperText, m_cacheIcon), m_boxStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
         }
 
         GUILayout.EndHorizontal();
@@ -331,36 +331,32 @@ public class ConsolePro : EditorWindow
         return selected;
     }
 
+    private const float RESIZER_HEIGHT = 1f;
+    private Rect m_resizerRect;
     private void OnDrawResizer()
     {
-        m_resizer = new Rect(0, (position.height * m_sizeRatio) - RESIZER_HEIGHT / 2, position.width, RESIZER_HEIGHT);
+        m_resizerRect = new Rect(0, (position.height * m_sizeRatio) - RESIZER_HEIGHT / 2, position.width, RESIZER_HEIGHT);
 
-        GUILayout.BeginArea(new Rect(m_resizer.position, new Vector2(position.width, RESIZER_HEIGHT)), m_resizerStyle);
+        GUILayout.BeginArea(new Rect(m_resizerRect.position, new Vector2(position.width, RESIZER_HEIGHT)), m_resizerStyle);
         GUILayout.EndArea();
 
-        EditorGUIUtility.AddCursorRect(m_resizer, MouseCursor.ResizeVertical);
+        EditorGUIUtility.AddCursorRect(m_resizerRect, MouseCursor.ResizeVertical);
     }
 
+    private bool m_isResizing;
+    private float m_sizeRatio;
     private void OnProcessEvents(Event e)
     {
         switch (e.type)
         {
             case EventType.MouseDown:
             case EventType.MouseDrag:
-                if (e.button == 0 && m_resizer.Contains(e.mousePosition))
+                if (e.button == 0 && m_resizerRect.Contains(e.mousePosition))
                 {
                     m_isResizing = true;
                 }
-                else if (!m_upperPanel.Contains(e.mousePosition) &&
-                        !m_lowerPanel.Contains(e.mousePosition) &&
-                        !m_resizer.Contains(e.mousePosition))
-                {
-                    m_isResizing = false;
-                }
                 break;
-
             case EventType.MouseUp:
-            case EventType.MouseLeaveWindow:
                 m_isResizing = false;
                 break;
         }
@@ -384,19 +380,22 @@ public class ConsolePro : EditorWindow
         }
     }
 
+    private Rect m_lowerPanelRect;
+    private Vector2 m_lowerPanelScrollPosition;
     private void OnDrawLowerPanel()
     {
-        m_lowerPanel = new Rect(0, (position.height * m_sizeRatio) + RESIZER_HEIGHT / 2, position.width, (position.height * (1 - m_sizeRatio)) - RESIZER_HEIGHT / 2);
+        m_lowerPanelRect = new Rect(0, (position.height * m_sizeRatio) + RESIZER_HEIGHT / 2, position.width, (position.height * (1 - m_sizeRatio)) - RESIZER_HEIGHT / 2);
 
-        GUILayout.BeginArea(m_lowerPanel);
-        m_lowerPanelScroll = GUILayout.BeginScrollView(m_lowerPanelScroll);
-
-        if (m_logMessageReceiver.m_selectedLog != null)
+        GUILayout.BeginArea(m_lowerPanelRect);
+        using (GUILayout.ScrollViewScope scrollViewScope = new GUILayout.ScrollViewScope(m_upperPanelScrollPosition))
         {
-            GUILayout.TextArea(m_logMessageReceiver.m_selectedLog.lowerText, m_textAreaStyle);
-        }
+            m_lowerPanelScrollPosition = scrollViewScope.scrollPosition;
 
-        GUILayout.EndScrollView();
+            if (m_logMessageReceiver.m_selectedLog != null)
+            {
+                GUILayout.TextArea(m_logMessageReceiver.m_selectedLog.lowerText, m_textAreaStyle);
+            }
+        }
         GUILayout.EndArea();
     }
 }
