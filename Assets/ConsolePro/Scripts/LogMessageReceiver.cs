@@ -1,69 +1,108 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
-public class LogMessegeReceiver
+public class LogMessageReceiver
 {
+    public bool toggleCollapse { get { return m_toggleCollapse; } set { m_toggleCollapse = value; UpdateLogs(); } }
+    private bool m_toggleCollapse;
+
+    public bool toggleLog { get { return m_toggleLog; } set { m_toggleLog = value; UpdateLogs(); } }
+    private bool m_toggleLog;
+
+    public bool toggleWarning { get { return m_toggleWarning; } set { m_toggleWarning = value; UpdateLogs(); } }
+    private bool m_toggleWarning;
+
+    public bool toggleError { get { return m_toggleError; } set { m_toggleError = value; UpdateLogs(); } }
+    private bool m_toggleError;
+
+    public string searchFilter { get { return m_searchFilter; } set { m_searchFilter = value; UpdateLogs(); } }
+    private string m_searchFilter;
+
+    public int logCount;
+    public int warningCount;
+    public int errorCount;
+    public int collapseLogCount;
+    public int collapseWarningCount;
+    public int collapseErrorCount;
+    public List<Log> filterLogs
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(searchFilter))
+            {
+                return m_toggleLogs;
+            }
+            else
+            {
+                return m_toggleLogs.FindAll(templateLog => templateLog.condition.Contains(searchFilter));
+            }
+        }
+    }
+    public Log selectedLog;
+
+    private int m_mainThreadID;
     private Action<Log> m_onLogMessageReceived;
 
     private List<Log> m_allLogs = new List<Log>();
-    public int m_allLogCount;
-    public int m_allWarningCount;
-    public int m_allErrorCount;
-
     private List<Log> m_collapseLogs = new List<Log>();
-    public int m_collapseLogCount;
-    public int m_collapseWarningCount;
-    public int m_collapseErrorCount;
-
     private List<Log> m_toggleLogs = new List<Log>();
-    public List<Log> m_filterLogs = new List<Log>();
-    public Log m_selectedLog;
 
-    private bool m_toggleCollapse;
-    private bool m_toggleLog = true;
-    private bool m_toggleWarning = true;
-    private bool m_toggleError = true;
-    private string m_searchFilter;
-
-    public LogMessegeReceiver(Action<Log> onLogMessageReceived)
+    public LogMessageReceiver(Action<Log> onLogMessageReceived)
     {
         m_onLogMessageReceived = onLogMessageReceived;
-
-        Clear();
+        m_mainThreadID = Thread.CurrentThread.ManagedThreadId;
 
         Application.logMessageReceived += OnLogMessageReceived;
+        Application.logMessageReceivedThreaded += OnLogMessageReceivedThreaded;
     }
 
     public void Destroy()
     {
         Application.logMessageReceived -= OnLogMessageReceived;
+        Application.logMessageReceivedThreaded -= OnLogMessageReceivedThreaded;
     }
 
     public void Clear()
     {
         m_allLogs.Clear();
-        m_allLogCount = 0;
-        m_allWarningCount = 0;
-        m_allErrorCount = 0;
+        logCount = 0;
+        warningCount = 0;
+        errorCount = 0;
 
         m_collapseLogs.Clear();
-        m_collapseLogCount = 0;
-        m_collapseWarningCount = 0;
-        m_collapseErrorCount = 0;
+        collapseLogCount = 0;
+        collapseWarningCount = 0;
+        collapseErrorCount = 0;
 
         m_toggleLogs.Clear();
-        m_filterLogs.Clear();
+        filterLogs.Clear();
 
-        m_selectedLog = null;
+        selectedLog = null;
 
-        UpdateLogs(null);
+        UpdateLogs();
     }
 
     private void OnLogMessageReceived(string condition, string stackTrace, LogType type)
     {
-        Log log = new Log(condition, stackTrace, type);
+        if (m_mainThreadID != Thread.CurrentThread.ManagedThreadId)
+        {
+            return;
+        }
 
+        Log log = new Log(condition, stackTrace, type);
+        UpdateLogs(log);
+    }
+
+    public void OnLogMessageReceivedThreaded(string condition, string stackTrace, LogType type)
+    {
+        if (m_mainThreadID == Thread.CurrentThread.ManagedThreadId)
+        {
+            return;
+        }
+
+        Log log = new Log(condition, stackTrace, type);
         UpdateLogs(log);
     }
 
@@ -72,7 +111,6 @@ public class LogMessegeReceiver
         UpdateAllLogs(log);
         UpdateCollapseLogs(log);
         UpdateToggleLogs();
-        UpdateFilterLogs();
 
         m_onLogMessageReceived?.Invoke(log);
     }
@@ -89,15 +127,15 @@ public class LogMessegeReceiver
         switch (log.type)
         {
             case LogType.Log:
-                m_allLogCount++;
+                logCount++;
                 break;
             case LogType.Warning:
-                m_allWarningCount++;
+                warningCount++;
                 break;
             case LogType.Error:
             case LogType.Exception:
             case LogType.Assert:
-                m_allErrorCount++;
+                errorCount++;
                 break;
         }
     }
@@ -122,15 +160,15 @@ public class LogMessegeReceiver
             switch (log.type)
             {
                 case LogType.Log:
-                    m_collapseLogCount++;
+                    collapseLogCount++;
                     break;
                 case LogType.Warning:
-                    m_collapseWarningCount++;
+                    collapseWarningCount++;
                     break;
                 case LogType.Error:
                 case LogType.Exception:
                 case LogType.Assert:
-                    m_collapseErrorCount++;
+                    collapseErrorCount++;
                     break;
             }
         }
@@ -139,7 +177,7 @@ public class LogMessegeReceiver
     private void UpdateToggleLogs()
     {
         List<Log> logs = new List<Log>();
-        if (m_toggleCollapse)
+        if (toggleCollapse)
         {
             logs.AddRange(m_collapseLogs);
         }
@@ -157,13 +195,13 @@ public class LogMessegeReceiver
             switch (cacheLog.type)
             {
                 case LogType.Log:
-                    if (m_toggleLog)
+                    if (toggleLog)
                     {
                         m_toggleLogs.Add(cacheLog);
                     }
                     break;
                 case LogType.Warning:
-                    if (m_toggleWarning)
+                    if (toggleWarning)
                     {
                         m_toggleLogs.Add(cacheLog);
                     }
@@ -171,56 +209,12 @@ public class LogMessegeReceiver
                 case LogType.Error:
                 case LogType.Exception:
                 case LogType.Assert:
-                    if (m_toggleError)
+                    if (toggleError)
                     {
                         m_toggleLogs.Add(cacheLog);
                     }
                     break;
             }
         }
-    }
-
-    private void UpdateFilterLogs()
-    {
-        m_filterLogs.Clear();
-
-        if (string.IsNullOrEmpty(m_searchFilter))
-        {
-            m_filterLogs.AddRange(m_toggleLogs);
-        }
-        else
-        {
-            m_filterLogs = m_toggleLogs.FindAll(templateLog => templateLog.condition.Contains(m_searchFilter));
-        }
-    }
-
-    public void SetToggleCollapse(bool value)
-    {
-        m_toggleCollapse = value;
-        UpdateLogs(null);
-    }
-
-    public void SetToggleLog(bool value)
-    {
-        m_toggleLog = value;
-        UpdateLogs(null);
-    }
-
-    public void SetToggleWarning(bool value)
-    {
-        m_toggleWarning = value;
-        UpdateLogs(null);
-    }
-
-    public void SetToggleError(bool value)
-    {
-        m_toggleError = value;
-        UpdateLogs(null);
-    }
-
-    public void SetSearchFilter(string value)
-    {
-        m_searchFilter = value;
-        UpdateLogs(null);
     }
 }
