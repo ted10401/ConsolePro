@@ -1,7 +1,5 @@
 # Console Pro
-<p align="center">
-<img style="margin:auto;"  src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-profile.png">
-</p>
+![alt tag](https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-profile.png)
 
 ## Intro
 The original one is great but don't contain the 'Search Filter' most important feature.
@@ -9,9 +7,7 @@ Console Pro is the clone of Unity's Console Window with the 'Search Filter' feat
 The whole window includes four parts, title panel, upper panel, resize panel, and lower panel.
 
 ### Title Panel
-<p align="center">
-<img style="margin:auto;"  src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-title.png">
-</p>
+![alt tag](https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-title.png)
 
 The title panel contains several buttons, Clear, Collapse, Clear on Play, Error Pause, Lock on Bottom, Search Filter, Show Logs, Show Warnings, and Show Errors.
 Clear: The button to clear logs.
@@ -25,16 +21,10 @@ Show Warnings: The toggle to show warnings or not.
 Show Errors: The toggle to show errors or not.
 
 ### Upper Panel
-<p align="center">
-<img style="margin:auto;"  src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-upper.png">
-</p>
+![alt tag](https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-upper.png)
 
 ### Resize Panel
-<p align="center">
-<img style="margin:auto;"  src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-resize.png">
-</p>
+![alt tag](https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-resize.png)
 
 ### Lower Panel
-<p align="center">
-<img style="margin:auto;"  src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-lower.png">
-</p>
+![alt tag](https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-lower.png)
