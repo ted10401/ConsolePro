@@ -45,7 +45,7 @@ public class ConsoleProTitlePanel : BaseConsoleProPanel
         m_toggleCollapse = GUILayout.Toggle(m_toggleCollapse, new GUIContent("Collapse"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
         toggleClearOnPlay = GUILayout.Toggle(toggleClearOnPlay, new GUIContent("Clear on Play"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
         toggleErrorPause = GUILayout.Toggle(toggleErrorPause, new GUIContent("Error Pause"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
-        toggleLockOnBottom = GUILayout.Toggle(toggleLockOnBottom, new GUIContent("Lock on Bottom"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
+        toggleLockOnBottom = GUILayout.Toggle(toggleLockOnBottom, new GUIContent("Lock-on Bottom"), EditorStyles.toolbarButton, GUILayout.ExpandWidth(true));
 
         GUILayout.Space(1);
 

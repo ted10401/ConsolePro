@@ -1,16 +1,16 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public class ConsolePro : EditorWindow
+public class ConsoleProEditorWindow : EditorWindow
 {
-    private static ConsolePro m_window;
+    private static ConsoleProEditorWindow m_window;
 
     [MenuItem("Window/Console Pro")]
     private static void OpenWindow()
     {
         if(m_window == null)
         {
-            m_window = GetWindow<ConsolePro>();
+            m_window = GetWindow<ConsoleProEditorWindow>();
             m_window.titleContent = new GUIContent("Console Pro", EditorGUIUtility.Load("icons/d_UnityEditor.ConsoleWindow.png") as Texture2D);
         }
 
@@ -18,18 +18,18 @@ public class ConsolePro : EditorWindow
     }
 
     private LogMessageReceiver m_logMessageReceiver;
-    private ConsoleProTitlePanel m_consoleProTitlePanel;
-    private ConsoleProUpperPanel m_consoleProUpperPanel;
-    private ConsoleProResizePanel m_consoleProResizePanel;
-    private ConsoleProLowerPanel m_consoleProLowerPanel;
+    private ConsoleProTitlePanel m_titlePanel;
+    private ConsoleProResizedPanel m_resizedPanel;
+    private ConsoleProUpperPanel m_upperPanel;
+    private ConsoleProLowerPanel m_lowerPanel;
 
     private void OnEnable()
     {
         m_logMessageReceiver = new LogMessageReceiver(OnLogMessageReceived);
-        m_consoleProTitlePanel = new ConsoleProTitlePanel(this, m_logMessageReceiver);
-        m_consoleProResizePanel = new ConsoleProResizePanel(this, m_logMessageReceiver);
-        m_consoleProLowerPanel = new ConsoleProLowerPanel(this, m_logMessageReceiver, m_consoleProResizePanel);
-        m_consoleProUpperPanel = new ConsoleProUpperPanel(this, m_logMessageReceiver, m_consoleProResizePanel);
+        m_titlePanel = new ConsoleProTitlePanel(this, m_logMessageReceiver);
+        m_resizedPanel = new ConsoleProResizedPanel(this, m_logMessageReceiver);
+        m_upperPanel = new ConsoleProUpperPanel(this, m_logMessageReceiver, m_resizedPanel);
+        m_lowerPanel = new ConsoleProLowerPanel(this, m_logMessageReceiver, m_resizedPanel);
 
         EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
     }
@@ -60,9 +60,9 @@ public class ConsolePro : EditorWindow
     {
         if (log != null)
         {
-            if(m_consoleProTitlePanel != null && m_consoleProTitlePanel.toggleLockOnBottom)
+            if(m_titlePanel != null && m_titlePanel.toggleLockOnBottom)
             {
-                m_consoleProUpperPanel.SetScrollPosition(new Vector2(0, m_logMessageReceiver.filterLogs.Count * 32));
+                m_upperPanel.SetScrollPosition(new Vector2(0, m_logMessageReceiver.filterLogs.Count * 32));
             }
 
             switch (log.type)
@@ -70,7 +70,7 @@ public class ConsolePro : EditorWindow
                 case LogType.Error:
                 case LogType.Exception:
                 case LogType.Assert:
-                    if (m_consoleProTitlePanel != null && m_consoleProTitlePanel.toggleErrorPause)
+                    if (m_titlePanel != null && m_titlePanel.toggleErrorPause)
                     {
                         EditorApplication.isPaused = true;
                     }
@@ -85,7 +85,7 @@ public class ConsolePro : EditorWindow
     {
         if (obj == PlayModeStateChange.EnteredPlayMode)
         {
-            if (m_consoleProTitlePanel.toggleClearOnPlay)
+            if (m_titlePanel.toggleClearOnPlay)
             {
                 m_logMessageReceiver.Clear();
             }
@@ -94,10 +94,10 @@ public class ConsolePro : EditorWindow
 
     private void OnGUI()
     {
-        m_consoleProTitlePanel.OnGUI();
-        m_consoleProUpperPanel.OnGUI();
-        m_consoleProResizePanel.OnGUI();
-        m_consoleProLowerPanel.OnGUI();
+        m_titlePanel.OnGUI();
+        m_upperPanel.OnGUI();
+        m_resizedPanel.OnGUI();
+        m_lowerPanel.OnGUI();
 
         if(GUI.changed)
         {

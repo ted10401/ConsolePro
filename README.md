@@ -3,14 +3,12 @@
 
 
 ## Intro
-The original one is great but don't contain the 'Search Filter' most important feature.
-Console Pro is the clone of Unity's Console Window with the 'Search Filter' features.
-The whole window includes four parts, title panel, upper panel, resize panel, and lower panel.
+The original one is great but doesn't contain the 'Search Filter' most important feature. Console Pro is the clone of Unity's Console Window with the 'Search Filter' features. The whole window includes four parts, the title panel, the upper panel, the resized panel, and the lower panel.
 
 
 ### Title Panel
 <img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-title.png">
-The title panel contains several buttons, Clear, Collapse, Clear on Play, Error Pause, Lock on Bottom, Search Filter, Show Logs,  Show Warnings, and Show Errors.
+The title panel contains several buttons, Clear, Collapse, Clear on Play, Error Pause, Lock-on Bottom, Search Filter, Show Logs,  Show Warnings, and Show Errors.
 
 |Feature|Description|
 |-------|-----------|
@@ -27,7 +25,7 @@ The title panel contains several buttons, Clear, Collapse, Clear on Play, Error 
 
 ### Upper Panel
 <img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-upper.png">
-The upper panel contains the log informations, including timestamp, condition, stacktrace, and log type.
+The upper panel contains the log information, including timestamp, condition, stackTrace, and log type.
 
 
 ### Resize Panel
@@ -38,4 +36,4 @@ What you only need to do is to use your mouse and drag the resize bar.
 
 ### Lower Panel
 <img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-lower.png">
-The lower panel display the whole log information once you select the log on the upper panel.
+The lower panel displays the whole log information once you select the log on the upper panel.

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public class ConsoleProResizePanel : BaseConsoleProPanel
+public class ConsoleProResizedPanel : BaseConsoleProPanel
 {
     public const float PANEL_HEIGHT = 1f;
     public float sizeRatio = 0.5f;
@@ -10,7 +10,7 @@ public class ConsoleProResizePanel : BaseConsoleProPanel
     private GUIStyle m_gUIStyle;
     private bool m_isResizing;
 
-    public ConsoleProResizePanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver) : base(editorWindow, logMessageReceiver)
+    public ConsoleProResizedPanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver) : base(editorWindow, logMessageReceiver)
     {
         m_gUIStyle = new GUIStyle();
         m_gUIStyle.normal.background = EditorGUIUtility.Load("icons/d_AvatarBlendBackground.png") as Texture2D;

@@ -12,12 +12,12 @@ public class ConsoleProUpperPanel : BaseConsoleProPanel
     private GUIStyle m_logStyle;
     private GUIStyle m_collapseStyle;
 
-    private ConsoleProResizePanel m_consoleProResizePanel;
+    private ConsoleProResizedPanel m_consoleProResizePanel;
 
     private Rect m_rect;
     private Vector2 m_scrollPosition;
 
-    public ConsoleProUpperPanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver, ConsoleProResizePanel consoleProResizePanel) : base(editorWindow, logMessageReceiver)
+    public ConsoleProUpperPanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver, ConsoleProResizedPanel consoleProResizePanel) : base(editorWindow, logMessageReceiver)
     {
         m_consoleProResizePanel = consoleProResizePanel;
 

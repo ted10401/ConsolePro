@@ -3,10 +3,10 @@ using UnityEditor;
 
 public class ConsoleProLowerPanel : BaseConsoleProPanel
 {
-    private ConsoleProResizePanel m_consoleProResizePanel;
+    private ConsoleProResizedPanel m_consoleProResizePanel;
     private GUIStyle m_textAreaStyle;
 
-    public ConsoleProLowerPanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver, ConsoleProResizePanel consoleProResizePanel) : base(editorWindow, logMessageReceiver)
+    public ConsoleProLowerPanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver, ConsoleProResizedPanel consoleProResizePanel) : base(editorWindow, logMessageReceiver)
     {
         m_consoleProResizePanel = consoleProResizePanel;
 
@@ -19,7 +19,7 @@ public class ConsoleProLowerPanel : BaseConsoleProPanel
     private Vector2 m_lowerPanelScrollPosition;
     public override void OnGUI()
     {
-        m_lowerPanelRect = new Rect(1, (m_editorWindow.position.height * m_consoleProResizePanel.sizeRatio) + ConsoleProResizePanel.PANEL_HEIGHT / 2, m_editorWindow.position.width, (m_editorWindow.position.height * (1 - m_consoleProResizePanel.sizeRatio)) - ConsoleProResizePanel.PANEL_HEIGHT / 2);
+        m_lowerPanelRect = new Rect(1, (m_editorWindow.position.height * m_consoleProResizePanel.sizeRatio) + ConsoleProResizedPanel.PANEL_HEIGHT / 2, m_editorWindow.position.width, (m_editorWindow.position.height * (1 - m_consoleProResizePanel.sizeRatio)) - ConsoleProResizedPanel.PANEL_HEIGHT / 2);
 
         GUILayout.BeginArea(m_lowerPanelRect);
         using (GUILayout.ScrollViewScope scrollViewScope = new GUILayout.ScrollViewScope(m_lowerPanelScrollPosition))
