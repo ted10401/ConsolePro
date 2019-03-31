@@ -3,7 +3,7 @@
 
 
 ## Intro
-The original one is great but doesn't contain the 'Search Filter' most important feature. Console Pro is the clone of Unity's Console Window with the 'Search Filter' features. The whole window includes four parts, the title panel, the upper panel, the resized panel, and the lower panel.
+The original one is great but doesn't contain the 'Search Filter' most important feature. Console Pro is the clone of Unity's Console Window with the 'Search Filter' features. The whole window includes four parts, the title panel, the simple panel, the resized panel, and the detail panel.
 
 
 ### The Title Panel
@@ -23,17 +23,17 @@ The title panel contains several buttons, Clear, Collapse, Clear on Play, Error 
 |Show Errors| The toggle to show errors or not.|
 
 
-### The Upper Panel
-<img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-upper.png">
-The upper panel contains the log information, including timestamp, logString, stackTrace, and log type.
+### The Simple Panel
+<img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-simple.png">
+The simple panel contains the log information, including timestamp, logString, stackTrace, and log type.
 
 
 ### The Resized Panel
 <img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-resize.png">
-The resized panel would help you to resize the screen height between the upper panel and the lower panel.
+The resized panel would help you to resize the screen height between the simple panel and the detail panel.
 What you only need to do is to use your mouse and drag the resize bar.
 
 
-### The Lower Panel
-<img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-lower.png">
-The lower panel displays the whole log information once you select the log on the upper panel.
+### The Detail Panel
+<img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-detail.png">
+The detail panel displays the whole log information once you select the log on the simple panel.

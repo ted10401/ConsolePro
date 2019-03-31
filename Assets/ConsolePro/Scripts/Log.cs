@@ -7,8 +7,8 @@ public class Log
     public string logString;
     public string stackTrace;
     public LogType type;
-    public string upperText;
-    public string lowerText;
+    public string simpleLogString;
+    public string detailLogString;
     public bool isSelected;
     public int collapseCount;
 
@@ -18,8 +18,8 @@ public class Log
         this.stackTrace = stackTrace;
         this.type = type;
 
-        upperText = GetTime() + logString + "\n" + stackTrace.Split(new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries)[0];
-        lowerText = logString + "\n" + stackTrace;
+        simpleLogString = GetTime() + logString + "\n" + stackTrace.Split(new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries)[0];
+        detailLogString = logString + "\n" + stackTrace;
         isSelected = false;
         collapseCount = 0;
     }

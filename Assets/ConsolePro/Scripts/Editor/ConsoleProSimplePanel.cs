@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-public class ConsoleProUpperPanel : BaseConsoleProPanel
+public class ConsoleProSimplePanel : BaseConsoleProPanel
 {
     private readonly Texture2D m_logIcon;
     private readonly Texture2D m_warningIcon;
@@ -17,7 +17,7 @@ public class ConsoleProUpperPanel : BaseConsoleProPanel
     private Rect m_rect;
     private Vector2 m_scrollPosition;
 
-    public ConsoleProUpperPanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver, ConsoleProResizedPanel consoleProResizePanel) : base(editorWindow, logMessageReceiver)
+    public ConsoleProSimplePanel(EditorWindow editorWindow, LogMessageReceiver logMessageReceiver, ConsoleProResizedPanel consoleProResizePanel) : base(editorWindow, logMessageReceiver)
     {
         m_consoleProResizePanel = consoleProResizePanel;
 
@@ -142,12 +142,12 @@ public class ConsoleProUpperPanel : BaseConsoleProPanel
 
         if (m_logMessageReceiver.toggleCollapse)
         {
-            selected = GUILayout.Button(new GUIContent(log.upperText, m_cacheIcon), m_logStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
+            selected = GUILayout.Button(new GUIContent(log.simpleLogString, m_cacheIcon), m_logStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
             GUILayout.Label(new GUIContent(log.collapseCount.ToString() + "  "), m_collapseStyle, GUILayout.Width(32), GUILayout.Height(32));
         }
         else
         {
-            selected = GUILayout.Button(new GUIContent(log.upperText, m_cacheIcon), m_logStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
+            selected = GUILayout.Button(new GUIContent(log.simpleLogString, m_cacheIcon), m_logStyle, GUILayout.ExpandWidth(true), GUILayout.Height(32));
         }
 
         GUILayout.EndHorizontal();

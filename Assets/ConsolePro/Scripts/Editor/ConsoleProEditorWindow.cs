@@ -20,16 +20,16 @@ public class ConsoleProEditorWindow : EditorWindow
     private LogMessageReceiver m_logMessageReceiver;
     private ConsoleProTitlePanel m_titlePanel;
     private ConsoleProResizedPanel m_resizedPanel;
-    private ConsoleProUpperPanel m_upperPanel;
-    private ConsoleProLowerPanel m_lowerPanel;
+    private ConsoleProSimplePanel m_simplePanel;
+    private ConsoleProDetailPanel m_detailPanel;
 
     private void OnEnable()
     {
         m_logMessageReceiver = new LogMessageReceiver(OnLogMessageReceived);
         m_titlePanel = new ConsoleProTitlePanel(this, m_logMessageReceiver);
         m_resizedPanel = new ConsoleProResizedPanel(this, m_logMessageReceiver);
-        m_upperPanel = new ConsoleProUpperPanel(this, m_logMessageReceiver, m_resizedPanel);
-        m_lowerPanel = new ConsoleProLowerPanel(this, m_logMessageReceiver, m_resizedPanel);
+        m_simplePanel = new ConsoleProSimplePanel(this, m_logMessageReceiver, m_resizedPanel);
+        m_detailPanel = new ConsoleProDetailPanel(this, m_logMessageReceiver, m_resizedPanel);
 
         EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
     }
@@ -62,7 +62,7 @@ public class ConsoleProEditorWindow : EditorWindow
         {
             if(m_titlePanel != null && m_titlePanel.toggleLockOnBottom)
             {
-                m_upperPanel.SetScrollPosition(new Vector2(0, m_logMessageReceiver.filterLogs.Count * 32));
+                m_simplePanel.SetScrollPosition(new Vector2(0, m_logMessageReceiver.filterLogs.Count * 32));
             }
 
             switch (log.type)
@@ -95,9 +95,9 @@ public class ConsoleProEditorWindow : EditorWindow
     private void OnGUI()
     {
         m_titlePanel.OnGUI();
-        m_upperPanel.OnGUI();
+        m_simplePanel.OnGUI();
         m_resizedPanel.OnGUI();
-        m_lowerPanel.OnGUI();
+        m_detailPanel.OnGUI();
 
         if(GUI.changed)
         {
