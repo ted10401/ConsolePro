@@ -25,7 +25,7 @@ The title panel contains several buttons, Clear, Collapse, Clear on Play, Error 
 
 ### The Upper Panel
 <img src="https://github.com/ted10401/ConsolePro/blob/master/GithubResources/consolepro-upper.png">
-The upper panel contains the log information, including timestamp, condition, stackTrace, and log type.
+The upper panel contains the log information, including timestamp, logString, stackTrace, and log type.
 
 
 ### The Resized Panel

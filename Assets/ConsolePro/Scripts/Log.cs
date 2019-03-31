@@ -4,7 +4,7 @@ public class Log
 {
     private const string TIME_FORMAT = "[{0}] ";
 
-    public string condition;
+    public string logString;
     public string stackTrace;
     public LogType type;
     public string upperText;
@@ -12,14 +12,14 @@ public class Log
     public bool isSelected;
     public int collapseCount;
 
-    public Log(string condition, string stackTrace, LogType type)
+    public Log(string logString, string stackTrace, LogType type)
     {
-        this.condition = condition;
+        this.logString = logString;
         this.stackTrace = stackTrace;
         this.type = type;
 
-        upperText = GetTime() + condition + "\n" + stackTrace.Split(new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries)[0];
-        lowerText = condition + "\n" + stackTrace;
+        upperText = GetTime() + logString + "\n" + stackTrace.Split(new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries)[0];
+        lowerText = logString + "\n" + stackTrace;
         isSelected = false;
         collapseCount = 0;
     }

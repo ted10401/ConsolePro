@@ -101,7 +101,7 @@ public class LogMessageReceiver
             }
             else
             {
-                return m_toggleLogs.FindAll(templateLog => templateLog.condition.Contains(searchFilter));
+                return m_toggleLogs.FindAll(templateLog => templateLog.logString.Contains(searchFilter));
             }
         }
     }
@@ -149,25 +149,25 @@ public class LogMessageReceiver
         UpdateLogs();
     }
 
-    private void OnLogMessageReceived(string condition, string stackTrace, LogType type)
+    private void OnLogMessageReceived(string logString, string stackTrace, LogType type)
     {
         if (m_mainThreadID != Thread.CurrentThread.ManagedThreadId)
         {
             return;
         }
 
-        Log log = new Log(condition, stackTrace, type);
+        Log log = new Log(logString, stackTrace, type);
         UpdateLogs(log);
     }
 
-    public void OnLogMessageReceivedThreaded(string condition, string stackTrace, LogType type)
+    public void OnLogMessageReceivedThreaded(string logString, string stackTrace, LogType type)
     {
         if (m_mainThreadID == Thread.CurrentThread.ManagedThreadId)
         {
             return;
         }
 
-        Log log = new Log(condition, stackTrace, type);
+        Log log = new Log(logString, stackTrace, type);
         UpdateLogs(log);
     }
 
@@ -212,7 +212,7 @@ public class LogMessageReceiver
             return;
         }
 
-        Log cacheLog = m_collapseLogs.Find((Log obj) => obj.condition == log.condition && obj.stackTrace == log.stackTrace && obj.type == log.type);
+        Log cacheLog = m_collapseLogs.Find((Log obj) => obj.logString == log.logString && obj.stackTrace == log.stackTrace && obj.type == log.type);
         if (cacheLog != null)
         {
             cacheLog.collapseCount++;
